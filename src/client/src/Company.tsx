@@ -1,5 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+import { ICompany } from "./types";
+
+interface IStyles {
+  alt: string;
+  iconImage: string;
+}
 
 const Card = styled.div`
   display: flex;
@@ -20,7 +26,7 @@ const Info = styled.div`
   margin: 0;
   padding: 0;
 `;
-const Image = styled.div`
+const Image = styled.div<IStyles>`
   display: flex;
   justify-content: flex-end;
   background: url(${(props) => props.iconImage});
@@ -35,7 +41,13 @@ const Name = styled.h4`
 `;
 const City = styled.h4``;
 
-export function Company({ specialties, city, company_name, logo }) {
+export function Company({
+  specialties,
+  city,
+  company_name,
+  logo,
+  id,
+}: ICompany) {
   return (
     <>
       <Card>

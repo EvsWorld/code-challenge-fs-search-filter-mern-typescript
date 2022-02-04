@@ -1,8 +1,9 @@
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
 import { api } from "./axiosConfig";
 
 import { Company } from "./Company";
+import { IFilter, ICompany } from "./types";
 import { filterCompanies } from "./filter/filterLogic";
 
 const Loader = styled.div`
@@ -43,16 +44,16 @@ const Sidebar = styled.div`
 `;
 
 export function App() {
-  const [filter, setFilter] = useState({
+  const [filter, setFilter] = useState<IFilter>({
     specialties: [],
     searchWord: "",
   });
-  const [initialCompanies, setInitialCompanies] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [initialCompanies, setInitialCompanies] = useState<ICompany[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // strip out all specialties to display checkbox options
   const allSpecialties = useMemo(() => {
-    const specialtiesAccum = [];
+    const specialtiesAccum: string[] = [];
     initialCompanies.forEach((company) => {
       company.specialties.forEach((specialty) => {
         if (!specialtiesAccum.includes(specialty)) {
@@ -69,7 +70,6 @@ export function App() {
       if (response.data) {
         setInitialCompanies(response.data);
       }
-
       setIsLoading(false);
     } catch (ex) {
       setIsLoading(false);
@@ -81,61 +81,58 @@ export function App() {
     getCompanies();
   }, []);
 
-  const handleSearch = (event) => {
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilter((prev) => ({ ...prev, searchWord: event.target.value }));
   };
 
   const isReady = !isLoading && allSpecialties && allSpecialties.length > 0;
   const filteredCompanies = useMemo(() => {
-    return filterCompanies(initialCompanies, filter);
+    return filterCompanies(filter, initialCompanies);
   }, [filter, initialCompanies]);
 
-  const content = !isReady ? (
-    <div>Loading...</div>
-  ) : (
-    filteredCompanies &&
-    filteredCompanies.map((company) => (
-      <Company {...company} key={company.id} />
-    ))
-  );
-  console.log("content :>> ", content);
   return (
     <>
-      <Header>
-        <input type="text" placeholder="Search..." onChange={handleSearch} />
-      </Header>
       {isReady ? (
-        <Page>
-          <Sidebar>
-            {allSpecialties.map((specialty) => (
-              <>
-                <label key={specialty} htmlFor={specialty}>
-                  <input
-                    id={specialty}
-                    name={specialty}
-                    type="checkbox"
-                    checked={filter.specialties.includes(specialty)}
-                    onChange={(e) => {
-                      const checked = filter.specialties.includes(specialty);
-                      setFilter((prev) => ({
-                        ...prev,
-                        specialties: checked
-                          ? prev.specialties.filter((sc) => sc !== specialty)
-                          : [...prev.specialties, specialty],
-                      }));
-                    }}
-                  />
-                  {specialty}
-                </label>
-              </>
-            ))}
-          </Sidebar>
-          <CompaniesContainer>
-            {filteredCompanies.map((company) => (
-              <Company {...company} key={company.id} />
-            ))}
-          </CompaniesContainer>
-        </Page>
+        <>
+          <Header>
+            <input
+              type="text"
+              placeholder="Search..."
+              onChange={handleSearch}
+            />
+          </Header>
+          <Page>
+            <Sidebar>
+              {allSpecialties.map((specialty) => (
+                <>
+                  <label key={specialty} htmlFor={specialty}>
+                    <input
+                      id={specialty}
+                      name={specialty}
+                      type="checkbox"
+                      checked={filter.specialties.includes(specialty)}
+                      onChange={(e) => {
+                        const checked = filter.specialties.includes(specialty);
+                        setFilter((prev) => ({
+                          ...prev,
+                          specialties: checked
+                            ? prev.specialties.filter((sc) => sc !== specialty)
+                            : [...prev.specialties, specialty],
+                        }));
+                      }}
+                    />
+                    {specialty}
+                  </label>
+                </>
+              ))}
+            </Sidebar>
+            <CompaniesContainer>
+              {filteredCompanies.map((company) => (
+                <Company {...company} key={company.id} />
+              ))}
+            </CompaniesContainer>
+          </Page>
+        </>
       ) : (
         <Loader> Loading...</Loader>
       )}
