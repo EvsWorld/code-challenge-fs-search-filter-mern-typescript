@@ -6,5 +6,6 @@ export const findAll = (req, res) => {
     "utf-8"
   );
   const companies = JSON.parse(jsonData);
+  console.log("companies :>> ", companies);
   res.send(companies);
 };

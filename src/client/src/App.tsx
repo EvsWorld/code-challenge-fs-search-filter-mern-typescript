@@ -5,6 +5,7 @@ import { api } from "./axiosConfig";
 import { Company } from "./Company";
 import { IFilter, ICompany } from "./types";
 import { filterCompanies } from "./filter/filterLogic";
+import { CheckboxList } from "./CheckboxList";
 
 const Loader = styled.div`
   display: flex;
@@ -32,15 +33,6 @@ const Header = styled.div`
 const Page = styled.div`
   display: flex;
   width: 100%;
-`;
-const Sidebar = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 325px;
-  background: #c2d8f2;
-  padding: 10px;
-  font-size: 11px;
 `;
 
 export function App() {
@@ -102,30 +94,11 @@ export function App() {
             />
           </Header>
           <Page>
-            <Sidebar>
-              {allSpecialties.map((specialty) => (
-                <>
-                  <label key={specialty} htmlFor={specialty}>
-                    <input
-                      id={specialty}
-                      name={specialty}
-                      type="checkbox"
-                      checked={filter.specialties.includes(specialty)}
-                      onChange={(e) => {
-                        const checked = filter.specialties.includes(specialty);
-                        setFilter((prev) => ({
-                          ...prev,
-                          specialties: checked
-                            ? prev.specialties.filter((sc) => sc !== specialty)
-                            : [...prev.specialties, specialty],
-                        }));
-                      }}
-                    />
-                    {specialty}
-                  </label>
-                </>
-              ))}
-            </Sidebar>
+            <CheckboxList
+              onChange={setFilter}
+              filter={filter}
+              specialties={allSpecialties}
+            />
             <CompaniesContainer>
               {filteredCompanies.map((company) => (
                 <Company {...company} key={company.id} />

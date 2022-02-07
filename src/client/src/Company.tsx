@@ -39,7 +39,6 @@ const Name = styled.h4`
   margin-bottom: 0.2em;
   font-family: "Montserrat", sans-serif;
 `;
-const City = styled.h4``;
 
 export function Company({
   specialties,
